@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "express": "^4.18.2",
-    "ejs": "^3.1.8"
+    "ejs": "^3.1.8",
+    "express-fileupload": "^1.2.1"
   }
 }
