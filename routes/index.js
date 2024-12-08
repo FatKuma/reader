@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const OpenAI = require('openai');
 
 // Home page route
 router.get('/', (req, res) => {
@@ -12,11 +13,28 @@ router.get('/chat', (req, res) => {
 });
 
 // API endpoint for Qwen model
-router.post('/api/qwen', (req, res) => {
-  const userQuery = req.body.query;
-  // Call the Qwen model API here and send the response back
-  // For demonstration, we'll just echo the query
-  res.json({ response: `Qwen's response to: ${userQuery}` });
+router.post('/api/qwen', async (req, res) => {
+    const userQuery = req.body.query;
+
+    try {
+        const openai = new OpenAI({
+            apiKey: process.env.ALIYUN_API_KEY,
+            baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1"
+        });
+
+        const completion = await openai.chat.completions.create({
+            model: "qwen-plus",
+            messages: [
+                { role: "system", content: "You are a helpful assistant." },
+                { role: "user", content: userQuery }
+            ],
+        });
+
+        res.json({ response: completion.choices[0].message.content });
+    } catch (error) {
+        console.error(`Error message: ${error}`);
+        res.status(500).json({ error: 'An error occurred while processing your request.' });
+    }
 });
 
 // Upload page route
